@@ -1,29 +1,28 @@
-===============================
-Visual Specification Editor
-===============================
+# CRN Designer
 
-A visual editor for specifications expresed in Signal Temporal Logic (STL)
+This is a web-app that allows a user to draw a parametrized sketch of a chemical reaction network, and a functional specification, and synthesises a set of parameters and initial conditions that satisfy this specification, using the method described in [Chemical Reaction Network Designs for Asynchronous Logic Circuits](https://link.springer.com/chapter/10.1007/978-3-319-43994-5_5?no-access=true).
+
+The JavaScript components implementing the [CRN sketch editor](https://github.com/jamesscottbrown/crn-sketch-editor) and [specification editor](https://github.com/jamesscottbrown/TimeRails) are available form separate repositories.
 
 
-Quickstart
-----------
+
+## Quickstart
 
 First, set your app's secret key as an environment variable. For example,
 add the following to ``.bashrc`` or ``.bash_profile``.
 
-.. code-block:: bash
-
     export VSE_SECRET='something-really-secret'
 
+
 Before running shell commands, set the ``FLASK_APP`` and ``FLASK_DEBUG``
-environment variables ::
+environment variables:
 
     export FLASK_APP=/path/to/autoapp.py
     export FLASK_DEBUG=1
 
-Then run the following commands to bootstrap your environment ::
+Then run the following commands to bootstrap your environment:
 
-    git clone https://github.com/jamesscottbrown/vse
+    git clone https://github.com/jamesscottbrown/crn-designer
     cd vse
     pip install -r requirements/dev.txt
     bower install
@@ -40,33 +39,7 @@ database tables and perform the initial migration ::
     flask run
 
 
-Deployment
-----------
-
-In your production environment, make sure the ``FLASK_DEBUG`` environment
-variable is unset or is set to ``0``, so that ``ProdConfig`` is used.
-
-
-Shell
------
-
-To open the interactive shell, run ::
-
-    flask shell
-
-By default, you will have access to the flask ``app``.
-
-
-Running Tests
--------------
-
-To run all tests, run ::
-
-    flask test
-
-
-Migrations
-----------
+## Migrations
 
 Whenever a database migration needs to be made. Run the following commands ::
 
