@@ -8,7 +8,7 @@ class Config(object):
 
     SECRET_KEY = os.environ.get('VSE_SECRET', 'secret-key')  # TODO: Change me
 
-    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', '/code/vse/uploads')  # TODO: Change me
+    UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', '/code/crn-designer/uploads')  # TODO: Change me
     ALLOWED_EXTENSIONS = set(['csv'])
 
     APP_DIR = os.path.abspath(os.path.dirname(__file__))  # This directory
