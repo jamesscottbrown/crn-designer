@@ -1,0 +1,21 @@
+
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Welcome {{ current_user.username }}</h1>
+
+    <h3>Your projects</h3>
+
+    <div>
+        {% if current_user.projects %}
+        {% for project in current_user.projects %}
+            <li><a href="/projects/{{ project.id }}">{{ project.name }}</a></li>
+        {% endfor %}
+    {% else %}
+        You haven't created any projects yet.
+    {% endif %}
+    </div>
+
+    <div><a href="/projects/add"><i class="fa fa-plus" aria-hidden="true"></i>Add a new project</a></div>
+
+{% endblock %}
+

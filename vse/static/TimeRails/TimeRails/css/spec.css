@@ -1,0 +1,86 @@
+ svg {
+    border: solid 1px #aaa;
+ }
+ .axis path, .axis line {
+    fill: none;
+    stroke: black;
+    shape-rendering: crispEdges;
+ }
+ .axis text {
+    font-family: sans-serif;
+    font-size: 11px;
+ }
+ .d3-context-menu {
+    position: absolute;
+    display: none;
+    background-color: #f2f2f2;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    min-width: 150px;
+    border: 1px solid #d4d4d4;
+    z-index: 1200;
+ }
+ .d3-context-menu ul {
+    list-style-type: none;
+    margin: 4px 0px;
+    padding: 0px;
+    cursor: default;
+ }
+ .d3-context-menu ul li {
+    padding: 4px 16px;
+ }
+ .d3-context-menu ul li:hover {
+    background-color: #4677f8;
+    color: #fefefe;
+ }
+
+ .placeholder-form {
+     margin-top: 10px;
+     background-color: #f7f7f9;
+     border: 1px solid #e1e1e8;
+     border-radius: 4px;
+ }
+
+ .placeholder-latex {
+     margin-top: 10px;
+     background-color: #f7f7f9;
+     border: 1px solid #e1e1e8;
+     border-radius: 4px;
+ }
+
+ .space-div {
+     margin-top: 10px;
+ }
+
+ .spec_menu {
+     color: #555;
+     background-color: #fff;
+     background-image: none;
+     border: 1px solid #ccc;
+     border-radius: 4px;
+     box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+ }
+
+.spec-row {
+         margin-top: 5px;
+}
+
+.red-line {
+    stroke: rgb(255,0,0);
+    stroke-width: 3px;
+}
+
+.grey-line {
+    stroke: rgb(128,128,128);
+    stroke-width: 3px;
+}
+
+.track_circle {
+     fill: rgb(255,0,0);
+    fill-opacity: 0.5;
+}
+
+.single-rect-spec {
+    border-bottom: 1px dashed #000;
+}

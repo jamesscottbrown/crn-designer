@@ -1,0 +1,121 @@
+
+{% extends "layout.html" %}
+
+
+ {% block css %}
+    {% assets "css_spec" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {% endassets %}
+{% endblock %}
+
+
+{% block body_other %} onload="for(var i=0; i<generate.length; i++){ generate[i](); }"{% endblock %}
+
+
+{% block content %}
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+          tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+        });
+    </script>
+
+    <script type="text/javascript">var generate = [];</script>
+
+
+    <h1>{{project.name}} <small>(<a href="/projects/{{project.id}}/edit"><i class="fa fa-pencil"></i>Edit</a> or
+    <a href="/projects/{{project.id}}/delete"><i class="fa fa-trash-o"></i>Delete</a>)</small></h1>
+
+    <blockquote>{{project.description}}</blockquote>
+
+    <h2>Data files</h2>
+    <ul>
+        {% for dataset in project.data %}
+        <li>{{dataset.name}} <small>(<a href="/data/{{dataset.id}}/delete"><i class="fa fa-trash-o"></i>Delete</a>)</small></li>
+        {% endfor %}
+    </ul>
+
+    <div><a href="/projects/{{project.id}}/data/add"><i class="fa fa-plus" aria-hidden="true"></i>Upload a data file</a></div>
+
+    <h2>Specifications</h2>
+
+        <div>
+            <button id="export_button">Export specifications</button>
+            <label for="operator">joined by: </label>
+            <select id="operator">
+                <option>and</option>
+                <option>or</option>
+            </select>
+        </div>
+
+    <div><a href="/specifications/add?project={{project.id}}"><i class="fa fa-plus" aria-hidden="true"></i>Add a new specification to the project</a></div>
+
+    {% for spec in project.specifications %}
+        <h2>{{ spec.name }} <small>(<a href="/specifications/{{spec.id}}/edit"><i class="fa fa-pencil"></i>Edit</a> or
+            <a href="/specifications/{{spec.id}}/delete"><i class="fa fa-trash-o"></i>Delete</a>)</small></h2>
+        <blockquote>{{spec.description}}</blockquote>
+
+        <p>Saved specification is: <code id="spec_string_{{spec.id}}">{{spec.specification}}</code> for <code>{{spec.variable}}</code></p>
+
+        <div id="constraint_{{spec.id}}">
+
+            <div class="svg-container"></div>
+
+            <div class="panel-group space-div" id="accordion-{{ loop.index }}">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion-{{loop.index}}" href="#collapseText-{{loop.index}}">Textual Description</a>
+                        </h4>
+                    </div>
+
+                    <div id="collapseText-{{loop.index}}" class="panel-collapse collapse in">
+                        <div class="panel-body placeholder-form">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion-{{loop.index}}" href="#collapseSymbol-{{loop.index}}">Symbolic Description</a>
+                        </h4>
+                    </div>
+
+                    <div id="collapseSymbol-{{loop.index}}" class="panel-collapse collapse in">
+                        <div class="panel-body placeholder-latex">
+
+                            <input id="use_letters_checkbox" value="false" type="checkbox">
+                            <label for="use_letters_checkbox">Use letters</label>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+            <script type="text/javascript">generate.push( function bar(x){
+                var diagram = add_subplot_from_specification("{{spec.specification}}", "constraint_{{spec.id}}", "{{spec.id}}", "{{spec.variable}}");
+                diagrams.push(diagram);
+            })
+            </script>
+        </div>
+    {% endfor %}
+
+    {% if project.specifications %}
+        <div><a href="/specifications/add?project={{project.id}}"><i class="fa fa-plus" aria-hidden="true"></i>Add a new specification to the project</a></div>
+    {% endif %}
+
+{% endblock %}
+
+
+{% block js %}
+<script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+<script type="text/javascript">
+    var diagrams = [];
+    var csrf_token = "{{ csrf_token() }}";
+    var dataset_names = {{dataset_names | tojson}};
+</script>
+
+
+{% assets "js_spec" %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+{% endassets %}
+{% endblock %}
