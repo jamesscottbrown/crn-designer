@@ -1,6 +1,6 @@
 # CRN Designer
 
-This is a web-app that allows a user to draw a parametrized sketch of a chemical reaction network, and a functional specification, and synthesises a set of parameters and initial conditions that satisfy this specification, using the method described in [Chemical Reaction Network Designs for Asynchronous Logic Circuits](https://link.springer.com/chapter/10.1007/978-3-319-43994-5_5?no-access=true).
+This is a web-app that allows a user to draw a parametrized sketch of a chemical reaction network, and a functional specification, and synthesises a set of parameters and initial conditions that satisfy this specification, using the method described in [Syntax-Guided Optimal Synthesis for Chemical Reaction Networks](https://link.springer.com/chapter/10.1007/978-3-319-63390-9_20).
 
 The JavaScript components implementing the [CRN sketch editor](https://github.com/jamesscottbrown/crn-sketch-editor) and [specification editor](https://github.com/jamesscottbrown/TimeRails) are available form separate repositories.
 
