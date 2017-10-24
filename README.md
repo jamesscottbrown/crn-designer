@@ -23,7 +23,7 @@ environment variables:
 Then run the following commands to bootstrap your environment:
 
     git clone https://github.com/jamesscottbrown/crn-designer
-    cd vse
+    cd crn-designer
     pip install -r requirements/dev.txt
     bower install
     flask run
