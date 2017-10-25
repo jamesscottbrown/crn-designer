@@ -27,15 +27,6 @@
 
     <blockquote>{{project.description}}</blockquote>
 
-    <h2>Data files</h2>
-    <ul>
-        {% for dataset in project.data %}
-        <li>{{dataset.name}} <small>(<a href="/data/{{dataset.id}}/delete"><i class="fa fa-trash-o"></i>Delete</a>)</small></li>
-        {% endfor %}
-    </ul>
-
-    <div><a href="/projects/{{project.id}}/data/add"><i class="fa fa-plus" aria-hidden="true"></i>Upload a data file</a></div>
-
     <h2>Specifications</h2>
 
         <div>
@@ -111,7 +102,7 @@
 <script type="text/javascript">
     var diagrams = [];
     var csrf_token = "{{ csrf_token() }}";
-    var dataset_names = {{dataset_names | tojson}};
+    var dataset_names = [];
 </script>
 
 

@@ -2,7 +2,7 @@
 """The app module, containing the app factory function."""
 from flask import Flask, render_template
 
-from crn_designer import commands, public, user, project, specification, data
+from crn_designer import commands, public, user, project, specification
 from crn_designer.assets import assets
 from crn_designer.extensions import bcrypt, cache, csrf_protect, db, debug_toolbar, login_manager, migrate
 from crn_designer.settings import ProdConfig
@@ -42,7 +42,6 @@ def register_blueprints(app):
     app.register_blueprint(user.views.blueprint)
     app.register_blueprint(project.views.blueprint)
     app.register_blueprint(specification.views.blueprint)
-    app.register_blueprint(data.views.blueprint)
     return None
 
 
