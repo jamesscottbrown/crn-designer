@@ -3,11 +3,11 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 
-from vse.extensions import login_manager
-from vse.public.forms import LoginForm
-from vse.user.forms import RegisterForm
-from vse.user.models import User
-from vse.utils import flash_errors
+from crn_designer.extensions import login_manager
+from crn_designer.public.forms import LoginForm
+from crn_designer.user.forms import RegisterForm
+from crn_designer.user.models import User
+from crn_designer.utils import flash_errors
 
 blueprint = Blueprint('public', __name__, static_folder='../static')
 

@@ -1,7 +1,7 @@
-from vse.data.models import Data
-from vse.data.forms import DataForm
+from crn_designer.data.models import Data
+from crn_designer.data.forms import DataForm
 
-from vse.utils import flash_errors
+from crn_designer.utils import flash_errors
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, current_user

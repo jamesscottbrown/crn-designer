@@ -1,11 +1,11 @@
-from vse.specification.models import Specification
-from vse.specification.forms import SpecificationForm
+from crn_designer.specification.models import Specification
+from crn_designer.specification.forms import SpecificationForm
 
-from vse.project.models import Project
+from crn_designer.project.models import Project
 
-from vse import smt
+from crn_designer import smt
 
-from vse.utils import flash_errors
+from crn_designer.utils import flash_errors
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, current_user

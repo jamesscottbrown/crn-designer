@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Data models."""
 
-from vse.database import Column, Model, SurrogatePK, db, reference_col, relationship
+from crn_designer.database import Column, Model, SurrogatePK, db, reference_col, relationship
 
 class Data(SurrogatePK, Model):
     """A dataset, attached to a project."""

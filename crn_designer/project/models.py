@@ -2,7 +2,7 @@
 """Project models."""
 import datetime as dt
 
-from vse.database import Column, Model, SurrogatePK, db, reference_col, relationship
+from crn_designer.database import Column, Model, SurrogatePK, db, reference_col, relationship
 
 class Project(SurrogatePK, Model):
     """A project, owned by a user."""

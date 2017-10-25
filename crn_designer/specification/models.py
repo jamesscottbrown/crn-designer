@@ -2,7 +2,7 @@
 """Specification models."""
 import datetime as dt
 
-from vse.database import Column, Model, SurrogatePK, db, reference_col, relationship
+from crn_designer.database import Column, Model, SurrogatePK, db, reference_col, relationship
 
 class Specification(SurrogatePK, Model):
     """A specification, part of a project."""
