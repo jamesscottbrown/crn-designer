@@ -9,7 +9,7 @@
 {% endblock %}
 
 
-{% block body_other %} onload="for(var i=0; i<generate.length; i++){ generate[i](); }"{% endblock %}
+{% block body_other %} onload="initialize();"{% endblock %}
 
 
 {% block content %}
@@ -19,6 +19,25 @@
         });
     </script>
 
+    <script type="text/javascript">
+        function initialize(){
+
+            for (var i = 0; i < generate.length; i++) {
+                generate[i]();
+            }
+
+            crnEditor({divName: 'crnDiv',
+                species: [{name: 'A0', required: true, initial_min: 0, initial_max: 100}, {
+                    name: 'B0',
+                    required: false,
+                    initial_min: 0,
+                    initial_max: 100
+                }]
+            });
+        }
+    </script>
+
+
     <script type="text/javascript">var generate = [];</script>
 
 
@@ -26,6 +45,9 @@
     <a href="/projects/{{project.id}}/delete"><i class="fa fa-trash-o"></i>Delete</a>)</small></h1>
 
     <blockquote>{{project.description}}</blockquote>
+
+    <h2>Sketch</h2>
+    <div id="crnDiv"></div>
 
     <h2>Specifications</h2>
 

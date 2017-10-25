@@ -11,6 +11,7 @@ css = Bundle(
 
 css_spec = Bundle(
     'TimeRails/TimeRails/css/spec.css',
+    'crn-sketch-editor/crn-editor.css',
     filters='cssmin',
     output='public/css/spec_css.css'
 )
@@ -31,6 +32,8 @@ js_spec = Bundle(
     'TimeRails/TimeRails/js/rectangle.js',
     'TimeRails/TimeRails/js/time_rail.js',
     'TimeRails/TimeRails/js/description.js',
+    'crn-sketch-editor/libs/cola.v3.min.js',
+    'crn-sketch-editor/crn-editor.js',
     filters='jsmin',
     output='public/js/spec_js.js'
 )
