@@ -26,15 +26,32 @@
                 generate[i]();
             }
 
-            crnEditor({divName: 'crnDiv',
-                species: [{name: 'A0', required: true, initial_min: 0, initial_max: 100}, {
-                    name: 'B0',
-                    required: false,
-                    initial_min: 0,
-                    initial_max: 100
-                }]
-            });
+            crn = crnEditor({divName: 'crnDiv'});
+            crn.setCRN('{{ project.crn_sketch | safe }}');
         }
+
+        function saveCRN() {
+            var crn_string = crn.getCRNjson();
+            $.ajax({
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                url: window.location.href + "saveCRN",
+                dataType: 'html',
+                async: true,
+                data: crn_string,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", csrf_token);
+                },
+                success: function () {
+                    console.log("SUCCESS")
+                },
+                error: function (result, textStatus) {
+                    console.log(result);
+                    console.log(textStatus);
+                }
+            })
+    }
+
     </script>
 
 
@@ -48,6 +65,7 @@
 
     <h2>Sketch</h2>
     <div id="crnDiv"></div>
+    <button onclick='saveCRN()'>Save CRN</button>
 
     <h2>Specifications</h2>
 

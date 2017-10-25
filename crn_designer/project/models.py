@@ -10,6 +10,7 @@ class Project(SurrogatePK, Model):
     __tablename__ = 'projects'
     name = Column(db.String(80), unique=False, nullable=False)
     description = Column(db.Text, unique=False, nullable=True)
+    crn_sketch = Column(db.Text, unique=False, nullable=True)
     public = Column(db.Boolean)
 
     user_id = reference_col('users', nullable=True)
@@ -17,9 +18,9 @@ class Project(SurrogatePK, Model):
 
     specifications = relationship('Specification', backref='project')
 
-    def __init__(self, name, description, public, **kwargs):
+    def __init__(self, name, description, crn_sketch, public, **kwargs):
         """Create instance."""
-        db.Model.__init__(self, name=name, description=description, public=public, **kwargs)
+        db.Model.__init__(self, name=name, description=description, crn_sketch=crn_sketch, public=public, **kwargs)
 
     def __repr__(self):
         """Represent instance as a unique string."""

@@ -10,6 +10,8 @@ import StringIO
 import csv
 import json
 
+from urllib import unquote_plus
+
 blueprint = Blueprint('project', __name__, url_prefix='/projects', static_folder='../static')
 
 
@@ -20,7 +22,14 @@ def list_projects():
     return render_template('projects/list_projects.html')
 
 
+
+
 @blueprint.route('/<int:project_id>')
+def project_no_backslash(project_id):
+    return redirect(url_for('project.project', project_id=project_id))
+
+
+@blueprint.route('/<int:project_id>/')
 def project(project_id):
     """List details of a project."""
     current_project = Project.query.filter_by(id=project_id).first()
@@ -76,10 +85,24 @@ def new_project():
     """Add new project."""
     form = ProjectForm(request.form)
     if form.validate_on_submit():
-        Project.create(name=form.name.data, description=form.description.data,
+        Project.create(name=form.name.data, description=form.description.data, crn_sketch='{}',
                        user_id=current_user.id, public=form.public.data)
         flash('New project created.', 'success')
         return redirect(url_for('project.list_projects'))
     else:
         flash_errors(form)
     return render_template('projects/new_project.html', form=form)
+
+@blueprint.route('/<int:project_id>/saveCRN', methods=['POST'])
+@login_required
+def save_crn(project_id):
+    """Update CRN for a project."""
+    current_project = Project.query.filter_by(id=project_id).first()
+
+    if current_project.user != current_user:
+        flash('Not your project!', 'danger')
+        return redirect('.')
+
+    current_project.crn_sketch = unquote_plus(request.get_data()).decode('utf-8')
+    current_project.save()
+    return "SUCCESS"
