@@ -4,7 +4,7 @@ import datetime as dt
 
 import pytest
 
-from vse.user.models import Role, User
+from crn_designer.user.models import Role, User
 
 from .factories import UserFactory
 

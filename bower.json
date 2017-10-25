@@ -1,5 +1,5 @@
 {
-  "name": "vse",
+  "name": "crn_designer",
   "dependencies": {
     "bootstrap": "~3.2.0",
     "jQuery": "~2.1.3"

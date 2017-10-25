@@ -1,6 +1,6 @@
-[submodule "crn-designer/static/TimeRails"]
-	path = crn-designer/static/TimeRails
+[submodule "crn_designer/static/TimeRails"]
+	path = crn_designer/static/TimeRails
 	url = git@github.com:jamesscottbrown/TimeRails.git
-[submodule "crn-designer/static/crn-sketch-editor"]
-	path = crn-designer/static/crn-sketch-editor
+[submodule "crn_designer/static/crn-sketch-editor"]
+	path = crn_designer/static/crn-sketch-editor
 	url = git@github.com:jamesscottbrown/crn-sketch-editor.git

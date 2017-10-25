@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test forms."""
 
-from vse.public.forms import LoginForm
-from vse.user.forms import RegisterForm
+from crn_designer.public.forms import LoginForm
+from crn_designer.user.forms import RegisterForm
 
 
 class TestRegisterForm:

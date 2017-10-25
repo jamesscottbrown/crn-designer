@@ -1,1 +1,1 @@
-web: gunicorn vse.app:create_app\(\) -b 0.0.0.0:$PORT -w 3
+web: gunicorn crn_designer.app:create_app\(\) -b 0.0.0.0:$PORT -w 3

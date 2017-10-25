@@ -4,9 +4,9 @@
 import pytest
 from webtest import TestApp
 
-from vse.app import create_app
-from vse.database import db as _db
-from vse.settings import TestConfig
+from crn_designer.app import create_app
+from crn_designer.database import db as _db
+from crn_designer.settings import TestConfig
 
 from .factories import UserFactory
 

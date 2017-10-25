@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test configs."""
-from vse.app import create_app
-from vse.settings import DevConfig, ProdConfig
+from crn_designer.app import create_app
+from crn_designer.settings import DevConfig, ProdConfig
 
 
 def test_production_config():
