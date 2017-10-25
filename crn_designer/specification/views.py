@@ -3,8 +3,6 @@ from crn_designer.specification.forms import SpecificationForm
 
 from crn_designer.project.models import Project
 
-from crn_designer import smt
-
 from crn_designer.utils import flash_errors
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
