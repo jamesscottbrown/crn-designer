@@ -10,7 +10,6 @@ class ProjectForm(Form):
 
     name = StringField('Name', validators=[DataRequired(), Length(min=3, max=25)])
     description = StringField('Description', validators=[Length(max=40)])
-    variables = StringField('Variables', validators=[DataRequired()])
     public = BooleanField('Public')
 
     def __init__(self, *args, **kwargs):

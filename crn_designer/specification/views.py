@@ -23,8 +23,6 @@ def new_project():
 
     form = SpecificationForm(request.form)
     project_id = request.args.get("project")
-    variables = Project.get_variables(project_id)
-    form.variable.choices = zip(variables, variables)
 
     if form.validate_on_submit():
 
@@ -91,8 +89,6 @@ def edit_specification(specification_id):
     project_id = current_spec.project_id
 
     form = SpecificationForm(request.form)
-    variables = Project.get_variables(project_id)
-    form.variable.choices = zip(variables, variables)
 
     if form.validate_on_submit():
         form.populate_obj(current_spec)
