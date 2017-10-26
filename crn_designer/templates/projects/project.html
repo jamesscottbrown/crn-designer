@@ -26,7 +26,7 @@
                 generate[i]();
             }
 
-            crn = crnEditor({divName: 'crnDiv'});
+            crn = crnEditor({divName: 'crnDiv', headerLevel: 2});
             crn.setCRN('{{ project.crn_sketch | safe }}');
         }
 
