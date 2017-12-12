@@ -78,6 +78,23 @@ def delete_project(project_id):
 
     return render_template('projects/delete_project.html', current_project=current_project)
 
+@blueprint.route('/<int:project_id>/copy', methods=['GET', 'POST'])
+@login_required
+def copy_project(project_id):
+    """Copy a project."""
+    current_project = Project.query.filter_by(id=project_id).first()
+
+    if current_project.user != current_user and not current_project.public:
+        flash('Not your project!', 'danger')
+        return redirect(url_for('project.project', project_id=project_id))
+
+    new_project = Project.create(name=current_project.name, description=current_project.description, crn_sketch=current_project.crn_sketch,
+                       user_id=current_user.id, public=current_project.public)
+
+    flash('New project created.', 'success')
+    return redirect(url_for('project.project', project_id=new_project.id))
+
+
 
 @blueprint.route('/add', methods=['GET', 'POST'])
 @login_required

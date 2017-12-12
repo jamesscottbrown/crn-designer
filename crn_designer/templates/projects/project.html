@@ -58,8 +58,16 @@
     <script type="text/javascript">var generate = [];</script>
 
 
-    <h1>{{project.name}} <small>(<a href="/projects/{{project.id}}/edit"><i class="fa fa-pencil"></i>Edit</a> or
-    <a href="/projects/{{project.id}}/delete"><i class="fa fa-trash-o"></i>Delete</a>)</small></h1>
+<h1>{{project.name}}
+    {% if project.user == current_user %}
+    <small>(<a href="/projects/{{ project.id }}/edit"><i class="fa fa-pencil"></i>Edit</a>,
+        <a href="/projects/{{ project.id }}/copy"><i class="fa fa-clipboard"></i>Copy</a>, or
+        <a href="/projects/{{ project.id }}/delete"><i class="fa fa-trash-o"></i>Delete</a>)
+    </small>
+    {% else %}
+    <small>(<a href="/projects/{{ project.id }}/copy"><i class="fa fa-clipboard"></i>Copy</a>)</small>
+    {% endif %}
+</h1>
 
     <blockquote>{{project.description}}</blockquote>
 
@@ -133,6 +141,39 @@
     {% if project.specifications %}
         <div><a href="/specifications/add?project={{project.id}}"><i class="fa fa-plus" aria-hidden="true"></i>Add a new specification to the project</a></div>
     {% endif %}
+
+    <h2>Solver Options</h2>
+
+<form action="./solve" class=".form-horizontal">
+
+    <div class="form-group">
+        <label class=".control-label" for="solver">Solver:</label>
+        <select class="form-control" id="solver">
+            <option>iSAT</option>
+            <option>dREAL</option>
+            <option>MathSAT</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label class=".control-label" for="solve">Solve?:</label>
+        <select class="form-control" id="solve">
+            <option value="Yes">Solve - generate CRN</option>
+            <option value="No">Generate input for solver only</option>
+        </select>
+    </div>
+
+
+    <div class="form-group">
+        <label class=".control-label" for="semantics">CRN Semantics:</label>
+        <select class="form-control" id="semantics">
+            <option value="ODE">Deterministic (ODE)</option>
+            <option value="LNA">Stochastic (Linear Noise Approximation)</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-default">Submit</button>
+</form>
 
 {% endblock %}
 
