@@ -11,7 +11,12 @@ class Project(SurrogatePK, Model):
     name = Column(db.String(80), unique=False, nullable=False)
     description = Column(db.Text, unique=False, nullable=True)
     crn_sketch = Column(db.Text, unique=False, nullable=True)
+    status = Column(db.Text, unique=False, nullable=True)
     public = Column(db.Boolean)
+
+    solver = Column(db.Text, unique=False, nullable=True)
+    crn_semantics = Column(db.Text, unique=False, nullable=True)
+    actually_solve = Column(db.Boolean)
 
     user_id = reference_col('users', nullable=True)
     user = relationship('User', backref='projects')

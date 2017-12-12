@@ -3,12 +3,15 @@ from crn_designer.project.forms import ProjectForm
 
 from crn_designer.utils import flash_errors
 
+from crn_designer.project.solver_wrapper import construct_crn
+
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import login_required, current_user
 
 import StringIO
 import csv
 import json
+import os
 
 from urllib import unquote_plus
 
@@ -60,6 +63,40 @@ def edit_project(project_id):
     else:
         flash_errors(form)
     return render_template('projects/edit_project.html', form=form, current_project=current_project)
+
+
+@blueprint.route('/<int:project_id>/solve', methods=['GET', 'POST'])
+@login_required
+def solve_project(project_id):
+    """Solve problem."""
+    current_project = Project.query.filter_by(id=project_id).first()
+
+    if current_project.user != current_user:
+        flash('Not your project!', 'danger')
+        return redirect('.')
+
+    # Construct CRN object
+    print current_project.crn_sketch
+
+    # Make directory for project
+    directory = os.path.join('/Users/jsb/Documents/Oxford/DPhil_code/crn-designer/static/projects/', str(project_id))
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+    # construct CRN object
+    crn_object = construct_crn(current_project.crn_sketch)
+
+    # TODO - construct file for solver
+
+    # TODO - call solver if necessary
+
+    # update status in DB
+    current_project.status = "Running"
+    current_project.save()
+
+    # TODO: start solver running problem
+
+    return render_template('projects/project.html', project=current_project)
 
 
 @blueprint.route('/<int:project_id>/delete', methods=['GET', 'POST'])
@@ -120,6 +157,18 @@ def save_crn(project_id):
         flash('Not your project!', 'danger')
         return redirect('.')
 
+    if current_project.status:
+        return "Cannot save, since project status is " + current_project.status
+
+    print "\n\n\nRequest:"
+    print request.form
+
     current_project.crn_sketch = unquote_plus(request.get_data()).decode('utf-8')
+
+    # save state
+    current_project.solver = request.form["solver"]
+    current_project.semantics = request.form["semantics"]
+    current_project.actually_solve = request.form["actually-solve"]
     current_project.save()
+    
     return "SUCCESS"

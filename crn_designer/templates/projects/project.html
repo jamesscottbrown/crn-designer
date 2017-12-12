@@ -28,6 +28,9 @@
 
             crn = crnEditor({divName: 'crnDiv', headerLevel: 2});
             crn.setCRN('{{ project.crn_sketch | safe }}');
+
+            {% if project.status %} crn.disableEditing();  {% endif %}
+
         }
 
         function saveCRN() {
@@ -70,6 +73,8 @@
 </h1>
 
     <blockquote>{{project.description}}</blockquote>
+
+{% if project.status %} <div><b>Status</b>: {{project.status}}</div>  {% endif %}
 
     <h2>Sketch</h2>
     <div id="crnDiv"></div>
@@ -150,14 +155,15 @@
         <label class=".control-label" for="solver">Solver:</label>
         <select class="form-control" id="solver">
             <option>iSAT</option>
-            <option>dREAL</option>
-            <option>MathSAT</option>
+            <option disabled>dREAL</option>
+            <option disabled>MathSAT</option>
+            <option disabled>local search</option>
         </select>
     </div>
 
     <div class="form-group">
-        <label class=".control-label" for="solve">Solve?:</label>
-        <select class="form-control" id="solve">
+        <label class=".control-label" for="actually-solve">Solve?:</label>
+        <select class="form-control" id="actually-solve">
             <option value="Yes">Solve - generate CRN</option>
             <option value="No">Generate input for solver only</option>
         </select>
@@ -184,6 +190,11 @@
     var diagrams = [];
     var csrf_token = "{{ csrf_token() }}";
     var dataset_names = [];
+
+    {% if project.solver %} d3.select("#solver").node().value = {{ project.solver }}; {% endif %}
+    {% if project.semantics %} d3.select("#semantics").node().value = {{ project.semantics }}; {% endif %}
+    {% if project.actually_solve %} d3.select("#actually_solve").node().value = {{ project.actually_solve }}; {% endif %}
+
 </script>
 
 
