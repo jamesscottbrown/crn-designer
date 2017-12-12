@@ -1,0 +1,6 @@
+crn_designer:
+  build: .
+  volumes:
+    - .:/code
+  ports:
+    - "5000:5000"

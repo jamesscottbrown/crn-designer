@@ -8,6 +8,18 @@ The JavaScript components implementing the [CRN sketch editor](https://github.co
 
 ## Quickstart
 
+### With Docker
+
+If you have Docker installed, you can run in development mode by simply running:
+
+    docker-compose -f docker-compose.yml up
+
+and then opening [``http://127.0.0.1:5000``](http://127.0.0.1:5000)
+    
+The first time this command is run, it will take a while to build a container image; on subsequent occasions the already-built image is used, and it starts running much faster.
+
+### Without Docker
+
 First, set your app's secret key as an environment variable. For example,
 add the following to ``.bashrc`` or ``.bash_profile``:
 
