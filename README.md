@@ -1,5 +1,7 @@
 # CRN Designer
 
+**Warning: This tool is still under active development and is not yet in a usable state.**
+
 This is a web-app that allows a user to draw a parametrized sketch of a chemical reaction network, and a functional specification, and synthesises a set of parameters and initial conditions that satisfy this specification, using the method described in [Syntax-Guided Optimal Synthesis for Chemical Reaction Networks](https://link.springer.com/chapter/10.1007/978-3-319-63390-9_20).
 
 The JavaScript components implementing the [CRN sketch editor](https://github.com/jamesscottbrown/crn-sketch-editor) and [specification editor](https://github.com/jamesscottbrown/TimeRails) are stored from separate repositories, and included as [git submodules](https://git-scm.com/book/en/Git-Tools-Submodules).
