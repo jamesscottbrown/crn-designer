@@ -26,7 +26,8 @@
                 generate[i]();
             }
 
-            crn = crnEditor({divName: 'crnDiv', headerLevel: 2, updateSpeciesCallback: updateSpeciesLists});
+            crn = crnEditor({divName: 'crnDiv', headerLevel: 2, updateSpeciesCallback: updateSpeciesLists,
+                updateInputCallback: updateInputSubplots});
             crn.setCRN('{{ project.crn_sketch | safe }}');
 
             {% if project.status %} crn.disableEditing();  {% endif %}
@@ -74,6 +75,18 @@
             // TODO: handle deletion
     }
 
+    function updateInputSubplots(inputs){
+        var plottedVariables = diagram.getVariableNames();
+
+        for (var i=0; i<inputs.length; i++){
+
+            var name = inputs[i].name;
+            if (plottedVariables.indexOf(name) == -1){
+                diagram.addInputSubplot("", name);
+            }
+        }
+        // TODO: handle deletion
+    }
 
     function addSubplot(){
        var variable = d3.select("#addSubplotVariableSelect").node().value;
@@ -145,7 +158,7 @@
         <div id="constraint_diagram_div">
 
             <div class="svg-container"></div>
-            
+
             <script type="text/javascript">generate.push( function bar(x){
                 diagram = Diagram("constraint_diagram_div", "0", {max_depth: 2, allow_rectangles: false, allow_modes: true});
                 // TODO: load saved state
