@@ -30,6 +30,8 @@ js_spec = Bundle(
     'libs/https_cdn.mathjax.org_mathjax_latest_MathJax.js?config=TeX-AMS-MML_HTMLorMML.js',
     'TimeRails/TimeRails/js/spec.js',
     'TimeRails/TimeRails/js/rectangle.js',
+    'TimeRails/TimeRails/js/mode.js',
+    'TimeRails/TimeRails/js/input.js',
     'TimeRails/TimeRails/js/time_rail.js',
     'TimeRails/TimeRails/js/description.js',
     'crn-sketch-editor/libs/cola.v3.min.js',

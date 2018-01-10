@@ -26,7 +26,7 @@
                 generate[i]();
             }
 
-            crn = crnEditor({divName: 'crnDiv', headerLevel: 2});
+            crn = crnEditor({divName: 'crnDiv', headerLevel: 2, updateSpeciesCallback: updateSpeciesLists});
             crn.setCRN('{{ project.crn_sketch | safe }}');
 
             {% if project.status %} crn.disableEditing();  {% endif %}
@@ -55,7 +55,49 @@
             })
     }
 
+    function updateSpeciesLists(species, speciesVariables){
+
+        var variableNames = species.concat(speciesVariables);
+        d3.select("#addSubplotVariableSelect")
+            .selectAll("option")
+            .data(variableNames)
+            .enter()
+            .append("option")
+            .attr("value", function (d) {
+                return d.name;
+            })
+            .text(function (d) {
+                return d.name;
+            })
+
+
+            // TODO: handle deletion
+    }
+
+
+    function addSubplot(){
+       var variable = d3.select("#addSubplotVariableSelect").node().value;
+        var derivative = d3.select("#addSubplotDerivativeSelect").node().value;
+        var variance = d3.select("#addSubplotVarianceSelect").node().value;
+
+        var derivativePrimes = Array(parseInt(derivative) + 1).join("'");
+
+        var name = "";
+        if (variance == "variance"){
+            name =  "Var(" + variable + derivativePrimes + ")";
+        } else {
+            name = variable + derivativePrimes;
+        }
+
+        // prevent creation of multiple subplots with same y-label
+        if (diagram.getVariableNames().indexOf(name) == -1){
+            diagram.addConstraintSubplot('', name);
+        }
+    }
+
+
     </script>
+
 
 
     <script type="text/javascript">var generate = [];</script>
@@ -83,36 +125,36 @@
     <h2>Specifications</h2>
 
         <div>
-            <button id="export_button">Export specifications</button>
-            <label for="operator">joined by: </label>
-            <select id="operator">
-                <option>and</option>
-                <option>or</option>
+        <i class="fa fa-plus" aria-hidden="true" onclick="addSubplot()"></i> Add subplot for
+
+            <select id="addSubplotDerivativeSelect">
+            	<option value="0"></option>
+            	<option value="1">the first derivative of </option>
+            	<option value="2">the second derivative of </option>
             </select>
+
+            <select id="addSubplotVarianceSelect">
+            	<option></option>
+            	<option value="variance">the variance of</option>
+            </select>
+
+            <select id="addSubplotVariableSelect"></select>
         </div>
 
-    <div><a href="/specifications/add?project={{project.id}}"><i class="fa fa-plus" aria-hidden="true"></i>Add a new specification to the project</a></div>
 
-    {% for spec in project.specifications %}
-        <h2>{{ spec.name }} <small>(<a href="/specifications/{{spec.id}}/edit"><i class="fa fa-pencil"></i>Edit</a> or
-            <a href="/specifications/{{spec.id}}/delete"><i class="fa fa-trash-o"></i>Delete</a>)</small></h2>
-        <blockquote>{{spec.description}}</blockquote>
-
-        <p>Saved specification is: <code id="spec_string_{{spec.id}}">{{spec.specification}}</code> for <code>{{spec.variable}}</code></p>
-
-        <div id="constraint_{{spec.id}}">
+        <div id="constraint_diagram_div">
 
             <div class="svg-container"></div>
 
-            <div class="panel-group space-div" id="accordion-{{ loop.index }}">
+            <div class="panel-group space-div" id="accordion-0">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion-{{loop.index}}" href="#collapseText-{{loop.index}}">Textual Description</a>
+                            <a data-toggle="collapse" data-parent="#accordion-0" href="#collapseText-0">Textual Description</a>
                         </h4>
                     </div>
 
-                    <div id="collapseText-{{loop.index}}" class="panel-collapse collapse in">
+                    <div id="collapseText-0" class="panel-collapse collapse in">
                         <div class="panel-body placeholder-form">
                         </div>
                     </div>
@@ -121,11 +163,11 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion-{{loop.index}}" href="#collapseSymbol-{{loop.index}}">Symbolic Description</a>
+                            <a data-toggle="collapse" data-parent="#accordion-0" href="#collapseSymbol-0">Symbolic Description</a>
                         </h4>
                     </div>
 
-                    <div id="collapseSymbol-{{loop.index}}" class="panel-collapse collapse in">
+                    <div id="collapseSymbol-0" class="panel-collapse collapse in">
                         <div class="panel-body placeholder-latex">
 
                             <input id="use_letters_checkbox" value="false" type="checkbox">
@@ -136,16 +178,15 @@
         </div>
 
             <script type="text/javascript">generate.push( function bar(x){
-                var diagram = add_subplot_from_specification("{{spec.specification}}", "constraint_{{spec.id}}", "{{spec.id}}", "{{spec.variable}}");
-                diagrams.push(diagram);
+                diagram = Diagram("constraint_diagram_div", "0", {max_depth: 2, allow_rectangles: false, allow_modes: true});
+                // TODO: load saved state
             })
             </script>
         </div>
-    {% endfor %}
 
-    {% if project.specifications %}
-        <div><a href="/specifications/add?project={{project.id}}"><i class="fa fa-plus" aria-hidden="true"></i>Add a new specification to the project</a></div>
-    {% endif %}
+
+
+    <p><a href="./upload">Upload data file</a></p>
 
     <h2>Solver Options</h2>
 
@@ -187,9 +228,9 @@
 {% block js %}
 <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
 <script type="text/javascript">
-    var diagrams = [];
     var csrf_token = "{{ csrf_token() }}";
     var dataset_names = [];
+    var diagram;
 
     {% if project.solver %} d3.select("#solver").node().value = {{ project.solver }}; {% endif %}
     {% if project.semantics %} d3.select("#semantics").node().value = {{ project.semantics }}; {% endif %}
