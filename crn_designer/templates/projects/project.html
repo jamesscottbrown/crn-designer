@@ -27,7 +27,7 @@
             }
 
             crn = crnEditor({divName: 'crnDiv', headerLevel: 2, updateSpeciesCallback: updateSpeciesLists,
-                updateInputCallback: updateInputSubplots});
+                updateInputCallback: updateInputSubplots, renameSpeciesCallback: renameSpecies});
             crn.setCRN('{{ project.crn_sketch | safe }}');
 
             {% if project.status %} crn.disableEditing();  {% endif %}
@@ -59,12 +59,15 @@
     function updateSpeciesLists(species, speciesVariables){
 
         var variableNames = species.concat(speciesVariables);
-        d3.select("#addSubplotVariableSelect")
-            .selectAll("option")
-            .data(variableNames)
+
+        var options = d3.select("#addSubplotVariableSelect")
+            .selectAll("option");
+
+        options.data(variableNames)
             .enter()
-            .append("option")
-            .attr("value", function (d) {
+            .append("option");
+
+        options.attr("value", function (d) {
                 return d.name;
             })
             .text(function (d) {
@@ -106,6 +109,11 @@
         if (diagram.getVariableNames().indexOf(name) == -1){
             diagram.addConstraintSubplot('', name);
         }
+    }
+
+    function renameSpecies(oldName, newName){
+        diagram.renameVariable(oldName, newName);
+
     }
 
 
@@ -160,7 +168,7 @@
             <div class="svg-container"></div>
 
             <script type="text/javascript">generate.push( function bar(x){
-                diagram = Diagram("constraint_diagram_div", "0", {max_depth: 2, allow_rectangles: false, allow_modes: true});
+                diagram = Diagram("constraint_diagram_div", "0", {max_depth: 2, allow_rectangles: false, allow_modes: true, generateExampleTrajectories: false});
                 // TODO: load saved state
             })
             </script>
