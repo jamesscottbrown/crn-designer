@@ -27,7 +27,8 @@
             }
 
             crn = crnEditor({divName: 'crnDiv', headerLevel: 2, updateSpeciesCallback: updateSpeciesLists,
-                updateInputCallback: updateInputSubplots, renameSpeciesCallback: renameSpecies});
+                updateInputCallback: updateInputSubplots, renameSpeciesCallback: diagram.renameVariable,
+                deleteVariableCallback: diagram.deleteVariable });
             crn.setCRN('{{ project.crn_sketch | safe }}');
 
             {% if project.status %} crn.disableEditing();  {% endif %}
@@ -107,15 +108,9 @@
 
         // prevent creation of multiple subplots with same y-label
         if (diagram.getVariableNames().indexOf(name) == -1){
-            diagram.addConstraintSubplot('', name);
+            diagram.addConstraintSubplot('', name, variable);
         }
     }
-
-    function renameSpecies(oldName, newName){
-        diagram.renameVariable(oldName, newName);
-
-    }
-
 
     </script>
 
