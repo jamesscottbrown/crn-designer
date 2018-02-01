@@ -102,6 +102,8 @@
         var name = "";
         if (variance == "variance"){
             name =  "Var(" + variable + ")" + derivativePrimes;
+        } else if (variance == "expectation"){
+            name =  "E(" + variable + ")" + derivativePrimes;
         } else {
             name = variable + derivativePrimes;
         }
@@ -150,7 +152,8 @@
             </select>
 
             <select id="addSubplotVarianceSelect">
-            	<option></option>
+            	<option value="">the value of X</option>
+                <option value="expectation">the expected value of X</option>`
             	<option value="variance">the variance of</option>
             </select>
 
