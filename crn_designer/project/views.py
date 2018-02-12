@@ -3,9 +3,9 @@ from crn_designer.project.forms import ProjectForm
 
 from crn_designer.utils import flash_errors
 
-from crn_designer.project.solver_wrapper import construct_crn
+from crn_designer.project.solver_wrapper import getProblem
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for, send_from_directory
 from flask_login import login_required, current_user
 
 import StringIO
@@ -17,6 +17,7 @@ from urllib import unquote_plus
 
 blueprint = Blueprint('project', __name__, url_prefix='/projects', static_folder='../static')
 
+basePath = '/Users/jsb/Documents/Oxford/DPhil_code/crn-designer/crn_designer/static/projects/'
 
 @blueprint.route('/')
 @login_required
@@ -79,12 +80,16 @@ def solve_project(project_id):
     print current_project.crn_sketch
 
     # Make directory for project
-    directory = os.path.join('/Users/jsb/Documents/Oxford/DPhil_code/crn-designer/static/projects/', str(project_id))
+    directory = os.path.join(basePath, str(project_id))
     if not os.path.exists(directory):
         os.makedirs(directory)
 
     # construct CRN object
-    crn_object = construct_crn(current_project.crn_sketch)
+    #crn_object = construct_crn(current_project.crn_sketch)
+
+    problem = getProblem(current_project.crn_sketch, current_project.spec)
+    with open(os.path.join(directory, 'iSAT.hys'), 'w') as fp:
+        fp.write(problem)
 
     # TODO - construct file for solver
 
@@ -98,6 +103,27 @@ def solve_project(project_id):
 
     return render_template('projects/project.html', project=current_project)
 
+
+@blueprint.route('/<int:project_id>/iSAT', methods=['GET'])
+def download_iSAT_file(project_id):
+
+    current_project = Project.query.filter_by(id=project_id).first()
+
+    if current_project.user != current_user and not current_project.public:
+        flash('Not your project!', 'danger')
+        return redirect(url_for('project.project', project_id=project_id))
+
+    directory = os.path.join(basePath, str(project_id))
+    file_path = os.path.join(directory, 'iSAT.hys')
+
+    if not os.path.isfile(file_path):
+        flash('iSAT file does not exist!', 'danger')
+        return redirect(url_for('project.project', project_id=project_id))
+
+    attachment_filename = current_project.name + ".hys"
+    return send_from_directory(directory, 'iSAT.hys', as_attachment=True, attachment_filename=attachment_filename)
+
+# attachment_filename
 
 @blueprint.route('/<int:project_id>/delete', methods=['GET', 'POST'])
 @login_required
