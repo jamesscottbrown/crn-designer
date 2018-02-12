@@ -5,8 +5,9 @@ from CRNSynthesis import iSATParser
 
 def getProblem(crn_sketch_string, specification_string):
 
-    crn_details = CRNbuilder(crn_sketch_string)
     input_species = get_input_species(specification_string)
+
+    crn_details = CRNbuilder(crn_sketch_string, input_species)
     crn = CRNSketch(crn_details.required_reactions, crn_details.optional_reactions, input_species)
 
     isLNA, requiredDerivatives, specification = construct_specification(specification_string)
@@ -97,7 +98,9 @@ def get_input_species(specification_string):
                     func += (peak_value - initial_value) * exp(-((t - peak_time) / sigma) ** 2)
 
             flow = Derivative(func, t).doit()
-            input_odes[Symbol(base_variable_name)] = InputSpecies(Symbol(base_variable_name), start_value, flow)
+
+            base_name = subplot["base_variable_name"]
+            input_odes[base_name] = InputSpecies(base_name, start_value, flow)
 
     return input_odes
 
@@ -105,7 +108,7 @@ def get_input_species(specification_string):
 class CRNbuilder:
     # Constructs a CRNSketch object from JSON serialization of a diagram
 
-    def __init__(self, crn_sketch):
+    def __init__(self, crn_sketch, input_species):
         self.choice_index = 0
 
         crn_data = json.loads(crn_sketch)
@@ -121,6 +124,8 @@ class CRNbuilder:
             speciesVariables[sv["name"]] = LambdaChoice([Species(x) for x in sv["species"]], len(speciesVariables))
         for sv in crn_data["species"]:
             speciesVariables[sv["name"]] = Species(sv["name"], initial_min=sv["initial_min"], initial_max=sv["initial_min"])
+        for sv in input_species:
+            speciesVariables[sv] = input_species[sv]
 
 
         rate_constants = {}
