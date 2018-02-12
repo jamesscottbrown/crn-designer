@@ -170,5 +170,28 @@ def save_crn(project_id):
     current_project.semantics = request.form["semantics"]
     current_project.actually_solve = request.form["actually-solve"]
     current_project.save()
-    
+
     return "SUCCESS"
+
+# TODO: merge save functions
+@blueprint.route('/<int:project_id>/save', methods=['POST'])
+@login_required
+def save_spec(project_id):
+    """Update saved spec for a project."""
+    current_project = Project.query.filter_by(id=project_id).first()
+
+    if current_project.user != current_user:
+        flash('Not your project!', 'danger')
+        return redirect('.')
+
+    if current_project.status:
+        return "Cannot save, since project status is " + current_project.status
+
+    print "\n\n\nRequest:"
+    print request.form
+
+    current_project.spec = unquote_plus(request.get_data()).decode('utf-8')
+    current_project.save()
+
+    return "SUCCESS"
+
