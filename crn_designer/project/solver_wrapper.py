@@ -110,6 +110,8 @@ class CRNbuilder:
 
     def __init__(self, crn_sketch, input_species):
         self.choice_index = 0
+        self.term_choice_index = 0
+        self.lambda_choice_index = 0
 
         crn_data = json.loads(crn_sketch)
         print crn_data
@@ -120,10 +122,12 @@ class CRNbuilder:
 
         # one dict stores both species and species variables
         speciesVariables = {}
-        for sv in crn_data["speciesVariables"]:
-            speciesVariables[sv["name"]] = LambdaChoice([Species(x) for x in sv["species"]], len(speciesVariables))
         for sv in crn_data["species"]:
-            speciesVariables[sv["name"]] = Species(sv["name"], initial_min=sv["initial_min"], initial_max=sv["initial_min"])
+            speciesVariables[sv["name"]] = Species(sv["name"], initial_min=sv["initial_min"], initial_max=sv["initial_max"])
+
+        for sv in crn_data["speciesVariables"]:
+            speciesVariables[sv["name"]] = LambdaChoice([speciesVariables[x] for x in sv["species"]], self.lambda_choice_index)
+            self.lambda_choice_index += 1
         for sv in input_species:
             speciesVariables[sv] = input_species[sv]
 
@@ -153,10 +157,11 @@ class CRNbuilder:
                     alternatives = []
                     or_reactant_links = filter(lambda x: x["target_id"] == reactant["id"], crn_data["links"])
                     for or_link in or_reactant_links:
-                        actual_reactant = filter(lambda x: x["id"] == or_link["target_id"], crn_data["nodes"])[0]
+                        actual_reactant = filter(lambda x: x["id"] == or_link["source_id"], crn_data["nodes"])[0]
                         alternatives.append(self.getTerm(actual_reactant["label"], or_link["stoichiometry"], stoichiometries, speciesVariables))
 
-                    reactant_objects.append(Or(alternatives))
+                    reactant_objects.append(TermChoice(self.term_choice_index, alternatives))
+                    self.term_choice_index += 1
 
                 else:
                     reactant_objects.append(self.getTerm(reactant["label"], link["stoichiometry"], stoichiometries, speciesVariables))
@@ -173,12 +178,13 @@ class CRNbuilder:
                 if product["type"] == "or-product":
 
                     alternatives = []
-                    or_product_links = filter(lambda x: x["source_id"] == reactant["id"], crn_data["links"])
+                    or_product_links = filter(lambda x: x["source_id"] == product["id"], crn_data["links"])
                     for or_link in or_product_links:
-                        actual_product = filter(lambda x: x["id"] == or_link["source_id"], crn_data["nodes"])[0]
-                        alternatives.append(self.getTerm(actual_product["label"], link["stoichiometry"], stoichiometries, speciesVariables))
+                        actual_product = filter(lambda x: x["id"] == or_link["target_id"], crn_data["nodes"])[0]
+                        alternatives.append(self.getTerm(actual_product["label"], or_link["stoichiometry"], stoichiometries, speciesVariables))
 
-                    product_objects.append(Or(alternatives))
+                    product_objects.append(TermChoice(self.term_choice_index, alternatives))
+                    self.term_choice_index += 1
 
                 else:
                     product_objects.append(self.getTerm(product["label"], link["stoichiometry"], stoichiometries, speciesVariables))
@@ -201,13 +207,13 @@ class CRNbuilder:
         species = speciesVariables[species_name] # replace name with species object
 
         if stoichiometry in stoichiometries.keys():
-            return Term(species, Choice(self.choice_index, stoichiometries[species]["min"], stoichiometries[species]["max"]))
             self.choice_index += 1
+            return Term(species, Choice(self.choice_index, int(stoichiometries[stoichiometry]["min"]), int(stoichiometries[stoichiometry]["max"])))
             # why second stoichiomery argument?
 
         elif stoichiometry == '?':
-            return Term(species, Choice(self.choice_index, 0, 2))
             self.choice_index += 1
+            return Term(species, Choice(self.choice_index, 0, 2))
 
         else:
-            return Term(species, stoichiometry)
+            return Term(species, int(stoichiometry))
