@@ -192,9 +192,9 @@ def save_crn(project_id):
     current_project.crn_sketch = unquote_plus(request.get_data()).decode('utf-8')
 
     # save state
-    current_project.solver = request.form["solver"]
-    current_project.semantics = request.form["semantics"]
-    current_project.actually_solve = request.form["actually-solve"]
+    #current_project.solver = request.form["solver"]
+    #current_project.semantics = request.form["semantics"]
+    #current_project.actually_solve = request.form["actually-solve"]
     current_project.save()
 
     return "SUCCESS"
