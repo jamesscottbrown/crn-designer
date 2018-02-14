@@ -34,6 +34,9 @@ RUN pip install -r requirements/dev.txt
 
 ENV FLASK_APP=/code/autoapp.py
 ENV FLASK_DEBUG=1
+RUN flask db init
+RUN flask db migrate
+RUN flask db upgrade
 
 CMD flask run --host=0.0.0.0
 
