@@ -28,32 +28,97 @@ def construct_specification(specification_string):
             isLNA = True
 
         if "'" in variable_name:
-            derivatives.append(convert_derivative_name(variable_name))
+            new_variable_name = convert_derivative_name(variable_name)
+            new_variable_name["name"] = reformat_variable_name(new_variable_name)
+            derivatives.append(new_variable_name)
 
+    modes = []
+    for subplot_index, subplot in enumerate(spec["subplot_geoms"]):
+        if subplot["subplot_type"] == "input":
+            continue
 
-    # TODO: convert derivatives to the required format
+        variable = reformat_variable_name(convert_derivative_name(subplot["variable_name"]))
+        for rect_index, rectangle in enumerate(subplot["rectangles"]):
+            constraint = "((%s >= %s) and (%s <= %s))" % (variable, rectangle["min_val"], variable, rectangle["max_val"])
 
+            new_mode = {"pre": [], "post": [], "during": [constraint], "locations": [(subplot_index, rect_index)],
+                          "kind": rectangle["kind"], "min_time": rectangle["min_time"], "max_time": rectangle["max_time"],
+                          "following": rectangle["following"], "siblings": rectangle["siblings"]};
 
-    # TODO: process the modes and intervals
+            if new_mode["following"]:
+                new_mode["following"] = (new_mode["following"]["subplot_index"], new_mode["following"]["rect_index"])
 
-    specification = []
+            modes.append(new_mode)
+            print constraint
 
-    return isLNA, derivatives, specification
+    # TODO: if modes are siblings, merge them into a single mode (join conditions with 'and', join locations array)
+
+    # Merge intervals following a mode into post-conditions on that mode
+    intervals = filter(lambda x: x["kind"] == "interval", modes)
+    while len(intervals) > 0:
+        for interval in intervals:
+
+            if interval["following"]:
+
+                # add the constraint imposed by this interval to the post-condition of mode being followed
+                for mode in filter(lambda x: interval["following"] in x["locations"], modes):
+                    mode["post"].extend(interval["during"])
+
+                # if anything was following this interval, set it to follow what the interval is following
+                pos = interval["locations"][0] # intervals not emrged, so will only have one location
+                for mode in modes:
+                    if pos == mode["following"]:
+                        mode["following"] = interval["following"]
+
+                intervals.remove(interval)
+                modes.remove(interval)
+
+            else:
+                intervals.remove(interval)
+                break # we've changed list so don't try to continue iterating over it
+
+    # TODO: Process intervals that are followed by modes *proceeding modes*
+    intervals = filter(lambda x: x["kind"] == "interval", modes)
+    while len(intervals) > 0:
+        for interval in intervals:
+            pass
+
+    # sort modes by start time
+    modes.sort(key=lambda x: x["min_time"])
+
+    # convert to output format, including empty modes if there are any gaps
+    output_modes = []
+    start_time = modes[0]["min_time"]
+    for mode in modes:
+        if mode["min_time"] != start_time:
+            output_modes.append(('', '', ''))
+        start_time = mode["max_time"]
+        output_modes.append((" and ".join(mode["pre"]), " and ".join(mode["during"]), " and ".join(mode["post"])))
+
+    return isLNA, derivatives, output_modes
+
+def reformat_variable_name(variable):
+    name = ""
+    if variable["is_variance"]:
+        name = "var_"
+    name += variable["variable"]
+    name += "_dot" * variable["order"]
+    return name
 
 
 def convert_derivative_name(name):
     num_primes = len(name) - len(name.replace("'", ""))
+    name = name.replace("'", "")
 
     is_variance = False
-    if name.index("E(") == 0:
+    if "E(" in name and name.index("E(") == 0:
         variable = name[2:-1]  # strip of 'E(' from start, and ')' from end
-    elif name.index("Var(") == 0:
+    elif "Var(" in name and name.index("Var(") == 0:
         variable = name[4:-1]  # strip of 'Var(' from start, and ')' from end
         is_variance = True
     else:
         variable = name
 
-    variable = variable.replace("'", "")
 
     return {"variable": variable, "order": num_primes, "is_variance": is_variance} # TODO: set name
 
