@@ -42,6 +42,9 @@ def project(project_id):
         flash('Not your project!', 'danger')
         return redirect('.')
 
+    if not current_project.spec:
+        current_project.spec = 'false'  # lowercase as interpreted by JS
+
     return render_template('projects/project.html', project=current_project)
 
 
