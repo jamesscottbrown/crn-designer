@@ -168,10 +168,10 @@ def new_project():
     """Add new project."""
     form = ProjectForm(request.form)
     if form.validate_on_submit():
-        Project.create(name=form.name.data, description=form.description.data, crn_sketch='{}',
-                       user_id=current_user.id, public=form.public.data)
+        p = Project.create(name=form.name.data, description=form.description.data, crn_sketch='{}',
+                           user_id=current_user.id, public=form.public.data)
         flash('New project created.', 'success')
-        return redirect(url_for('project.list_projects'))
+        return redirect(url_for('project.project', project_id=p.id))
     else:
         flash_errors(form)
     return render_template('projects/new_project.html', form=form)
