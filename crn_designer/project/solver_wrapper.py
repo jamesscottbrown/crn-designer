@@ -13,7 +13,7 @@ def getProblem(crn_sketch_string, specification_string):
     isLNA, requiredDerivatives, specification = construct_specification(specification_string)
 
     flow = crn.flow(isLNA, requiredDerivatives)
-    return iSATParser.constructISAT(crn, specification, flow, costFunction='')
+    return iSATParser.constructISAT(crn, specification, flow, crn_details.constraints)
 
 
 def construct_specification(specification_string):
@@ -120,7 +120,7 @@ def convert_derivative_name(name):
         variable = name
 
 
-    return {"variable": variable, "order": num_primes, "is_variance": is_variance} # TODO: set name
+    return {"variable": str(variable), "order": num_primes, "is_variance": is_variance} # TODO: set name
 
 
 def get_input_species(specification_string):
@@ -183,7 +183,11 @@ class CRNbuilder:
 
         stoichiometries = {}
         for stoich in crn_data["stoichiometries"]:
-            stoichiometries[stoich["name"]] = stoich
+            name = str(stoich["name"])
+            stoichiometries[name] = Choice(self.choice_index, int(stoich["min"]), int(stoich["max"]))
+            stoichiometries[name].name = name
+            stoichiometries[name].symbol = symbols(name)
+            self.choice_index += 1
 
         # one dict stores both species and species variables
         speciesVariables = {}
@@ -201,8 +205,7 @@ class CRNbuilder:
         for rc in crn_data["rates"]:
             rate_constants[rc["name"]] = RateConstant(rc["name"], rc["min"], rc["max"])
 
-        for constraint in crn_data["constraints"]:
-            pass
+        self.constraints = crn_data["constraints"]
 
         # first get all reactions
         required_reaction_objects = []
@@ -272,9 +275,7 @@ class CRNbuilder:
         species = speciesVariables[species_name] # replace name with species object
 
         if stoichiometry in stoichiometries.keys():
-            self.choice_index += 1
-            return Term(species, Choice(self.choice_index, int(stoichiometries[stoichiometry]["min"]), int(stoichiometries[stoichiometry]["max"])))
-            # why second stoichiomery argument?
+            return Term(species, stoichiometries[stoichiometry])
 
         elif stoichiometry == '?':
             self.choice_index += 1
