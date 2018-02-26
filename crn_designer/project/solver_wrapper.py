@@ -88,12 +88,13 @@ def construct_specification(specification_string):
 
     # convert to output format, including empty modes if there are any gaps
     output_modes = []
-    start_time = modes[0]["min_time"]
-    for mode in modes:
-        if mode["min_time"] != start_time:
-            output_modes.append(('', '', ''))
-        start_time = mode["max_time"]
-        output_modes.append((" and ".join(mode["pre"]), " and ".join(mode["during"]), " and ".join(mode["post"])))
+    if len(modes) > 0:
+        start_time = modes[0]["min_time"]
+        for mode in modes:
+            if mode["min_time"] != start_time:
+                output_modes.append(('', '', ''))
+            start_time = mode["max_time"]
+            output_modes.append((" and ".join(mode["pre"]), " and ".join(mode["during"]), " and ".join(mode["post"])))
 
     return isLNA, derivatives, output_modes
 
