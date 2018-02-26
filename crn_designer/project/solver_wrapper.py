@@ -205,6 +205,12 @@ class CRNbuilder:
         for rc in crn_data["rates"]:
             rate_constants[rc["name"]] = RateConstant(rc["name"], rc["min"], rc["max"])
 
+            if rc["kineticsType"] == "Mass Action":
+                rate_constants[rc["name"]+"_km"] = RateConstant(rc["name"]+"_km", rc["Km_min"], rc["Km_max"])
+            elif rc["kineticsType"] in ["Hill (Activation)", "Hill (Repression)"]:
+                rate_constants[rc["name"]+"_ka"] = RateConstant(rc["name"]+"_ka", rc["Ka_min"], rc["Ka_max"])
+                rate_constants[rc["name"]+"_n"] = RateConstant(rc["name"]+"_n", rc["n_min"], rc["n_max"])
+
         self.constraints = crn_data["constraints"]
 
         # first get all reactions
@@ -259,10 +265,26 @@ class CRNbuilder:
 
             reaction_rate = rate_constants[reaction["label"]]
 
+            kinetics_type = filter(lambda x: x["name"] == reaction_rate.name, crn_data["rates"])[0]["kineticsType"]
+
+            if kinetics_type == "Mass Action":
+                new_reaction = Reaction(reactant_objects, product_objects, reaction_rate)
+            elif kinetics_type == "Michaelis-Menten":
+                Km = rate_constants[reaction["label"] + "_km"]
+                new_reaction = MichaelisMentenReaction(reactant_objects, product_objects, reaction_rate, Km)
+            elif kinetics_type == "Hill (Activation)":
+                Ka = rate_constants[reaction["label"] + "_ka"]
+                n = rate_constants[reaction["label"] + "_n"]
+                new_reaction = HillActivationReaction(reactant_objects, product_objects, reaction_rate, Ka, n)
+            elif kinetics_type == "Hill (Repression)":
+                Ka = rate_constants[reaction["label"] + "_ka"]
+                n = rate_constants[reaction["label"] + "_n"]
+                new_reaction = HillRepressionReaction(reactant_objects, product_objects, reaction_rate, Ka, n)
+
             if "required" in reaction.keys() and reaction["required"]:
-                required_reaction_objects.append(Reaction(reactant_objects, product_objects, reaction_rate))
+                required_reaction_objects.append(new_reaction)
             else:
-                optional_reaction_objects.append(Reaction(reactant_objects, product_objects, reaction_rate))
+                optional_reaction_objects.append(new_reaction)
 
         self.required_reactions = required_reaction_objects
         self.optional_reactions = optional_reaction_objects
