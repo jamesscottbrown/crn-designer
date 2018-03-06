@@ -62,21 +62,24 @@
         var variableNames = species.concat(speciesVariables);
 
         var options = d3.select("#addSubplotVariableSelect")
-            .selectAll("option");
+            .selectAll("option")
+            .data(variableNames);
 
-        options.data(variableNames)
+        options
             .enter()
             .append("option");
 
+        options
+            .exit()
+            .remove();
+
         options.attr("value", function (d) {
-                return d.name;
-            })
+            return d.name;
+        })
             .text(function (d) {
                 return d.name;
-            })
+            });
 
-
-            // TODO: handle deletion
     }
 
     function updateInputSubplots(inputs){
