@@ -206,7 +206,7 @@ class CRNbuilder:
         for rc in crn_data["rates"]:
             rate_constants[rc["name"]] = RateConstant(rc["name"], rc["min"], rc["max"])
 
-            if rc["kineticsType"] == "Mass Action":
+            if rc["kineticsType"] == "Michaelis-Menten":
                 rate_constants[rc["name"]+"_km"] = RateConstant(rc["name"]+"_km", rc["Km_min"], rc["Km_max"])
             elif rc["kineticsType"] in ["Hill (Activation)", "Hill (Repression)"]:
                 rate_constants[rc["name"]+"_ka"] = RateConstant(rc["name"]+"_ka", rc["Ka_min"], rc["Ka_max"])
