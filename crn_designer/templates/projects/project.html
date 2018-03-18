@@ -177,6 +177,7 @@
             <script type="text/javascript">generate.push( function bar(x){
                 diagram = new Diagram("constraint_diagram_div", "0", {max_depth: 1, allow_rectangles: false, allow_modes: true, allow_intervals: true, allow_globally: false, generateExampleTrajectories: false, saveURL: window.location + "save"});
                 diagram.load({{ project.spec | safe }});
+                diagram.plotData();
             })
             </script>
         </div>

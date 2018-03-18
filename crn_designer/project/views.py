@@ -107,6 +107,40 @@ def solve_project(project_id):
     return render_template('projects/project.html', project=current_project)
 
 
+@blueprint.route('/<int:project_id>/data', methods=['GET'])
+def download_data(project_id):
+
+    current_project = Project.query.filter_by(id=project_id).first()
+
+    if current_project.user != current_user and not current_project.public:
+        flash('Not your project!', 'danger')
+        return redirect(url_for('project.project', project_id=project_id))
+
+    directory = os.path.join(basePath, str(project_id))
+    file_path = os.path.join(directory, 'data.csv')
+
+    if not os.path.isfile(file_path):
+        return ""
+
+    with open(file_path, 'r') as myfile:
+        csv_data = myfile.read()
+        f = StringIO.StringIO(csv_data)
+        reader = csv.reader(f, delimiter=',')
+
+    data = []
+    variable_names = []
+    for row in reader:
+        if not variable_names:
+            variable_names = row[1:]
+            continue
+
+        time = row.pop(0)
+        for pair in zip(variable_names, row):
+            data.append({"time": time, "variable": pair[0], "value": pair[1]})
+
+    return json.dumps([data])
+
+
 @blueprint.route('/<int:project_id>/iSAT', methods=['GET'])
 def download_iSAT_file(project_id):
 
