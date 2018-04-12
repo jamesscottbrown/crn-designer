@@ -17,7 +17,6 @@ from urllib import unquote_plus
 
 blueprint = Blueprint('project', __name__, url_prefix='/projects', static_folder='../static')
 
-basePath = current_app.config.get("UPLOAD_FOLDER")
 
 @blueprint.route('/')
 @login_required
@@ -83,7 +82,7 @@ def solve_project(project_id):
     print current_project.crn_sketch
 
     # Make directory for project
-    directory = os.path.join(basePath, str(project_id))
+    directory = os.path.join(current_app.config.get("UPLOAD_FOLDER"), str(project_id))
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -116,7 +115,7 @@ def download_data(project_id):
         flash('Not your project!', 'danger')
         return redirect(url_for('project.project', project_id=project_id))
 
-    directory = os.path.join(basePath, str(project_id))
+    directory = os.path.join(current_app.config.get("UPLOAD_FOLDER"), str(project_id))
     file_path = os.path.join(directory, 'data.csv')
 
     if not os.path.isfile(file_path):
@@ -150,7 +149,7 @@ def download_iSAT_file(project_id):
         flash('Not your project!', 'danger')
         return redirect(url_for('project.project', project_id=project_id))
 
-    directory = os.path.join(basePath, str(project_id))
+    directory = os.path.join(current_app.config.get("UPLOAD_FOLDER"), str(project_id))
     file_path = os.path.join(directory, 'iSAT.hys')
 
     if not os.path.isfile(file_path):
