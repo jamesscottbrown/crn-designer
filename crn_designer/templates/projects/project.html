@@ -31,7 +31,12 @@
                 deleteVariableCallback: diagram.deleteVariable });
             crn.setCRN('{{ project.crn_sketch | safe }}');
 
-            {% if project.status %} crn.disableEditing();  {% endif %}
+            {% if project.status %}
+                crn.disableEditing();
+
+                diagram.specification_fixed = true;
+                document.getElementById("constant_checkbox").checked = true;
+            {% endif %}
 
         }
 
