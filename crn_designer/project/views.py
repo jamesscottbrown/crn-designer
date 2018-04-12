@@ -5,7 +5,7 @@ from crn_designer.utils import flash_errors
 
 from crn_designer.project.solver_wrapper import getProblem
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for, send_from_directory
+from flask import Blueprint, flash, redirect, render_template, request, url_for, send_from_directory, current_app
 from flask_login import login_required, current_user
 
 import StringIO
@@ -17,7 +17,7 @@ from urllib import unquote_plus
 
 blueprint = Blueprint('project', __name__, url_prefix='/projects', static_folder='../static')
 
-basePath = '/Users/jsb/Documents/Oxford/DPhil_code/crn-designer/crn_designer/static/projects/'
+basePath = current_app.config.get("UPLOAD_FOLDER")
 
 @blueprint.route('/')
 @login_required
