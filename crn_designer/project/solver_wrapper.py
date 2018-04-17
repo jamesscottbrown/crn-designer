@@ -13,8 +13,10 @@ def getProblem(crn_sketch_string, specification_string):
     isLNA, requiredDerivatives, specification = construct_specification(specification_string)
 
     flow = crn.flow(isLNA, requiredDerivatives)
-    return iSATParser.constructISAT(crn, specification, flow, crn_details.constraints)
+    isat_problem, modes = iSATParser.constructISAT(crn, specification, flow, crn_details.constraints), specification
+    dreal_problem, modes = iSATParser.constructdReal(crn, specification, flow, crn_details.constraints), specification
 
+    return isat_problem, dreal_problem, flow, crn
 
 def construct_specification(specification_string):
     spec = json.loads(specification_string)
@@ -43,7 +45,7 @@ def construct_specification(specification_string):
 
             new_mode = {"pre": [], "post": [], "during": [constraint], "locations": [(subplot_index, rect_index)],
                           "kind": rectangle["kind"], "min_time": rectangle["min_time"], "max_time": rectangle["max_time"],
-                          "following": rectangle["following"], "siblings": rectangle["siblings"]};
+                          "following": rectangle["following"], "siblings": rectangle["siblings"]}
 
             if new_mode["following"]:
                 new_mode["following"] = (new_mode["following"]["subplot_index"], new_mode["following"]["rect_index"])

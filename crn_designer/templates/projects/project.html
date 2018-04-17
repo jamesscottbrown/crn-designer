@@ -193,41 +193,43 @@
 
     <h2>Solver Options</h2>
 
-<form action="./solve" class=".form-horizontal">
+<form action="./solve" class=".form-horizontal" method="post">
 
     <div class="form-group">
         <label class=".control-label" for="solver">Solver:</label>
-        <select class="form-control" id="solver">
-            <option>iSAT</option>
-            <option disabled>dREAL</option>
-            <option disabled>MathSAT</option>
-            <option disabled>local search</option>
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label class=".control-label" for="actually-solve">Solve?:</label>
-        <select class="form-control" id="actually-solve">
-            <option value="Yes">Solve - generate CRN</option>
-            <option value="No">Generate input for solver only</option>
+        <select class="form-control" id="solver" name="solver" {%if project.status %}disabled{% endif %}>
+            <option value="None" {% if project.crn_semantics == "None" %}selected{% endif %}>Generate input files for solvers only</option>
+            <option value="iSAT" {% if project.crn_semantics == "iSAT" %}selected{% endif %} {%if not solvers_enabled %}disabled{% endif %}>Solve with iSAT</option>
+            <option value="dReach" {% if project.crn_semantics == "dReach" %}selected{% endif %} {%if not solvers_enabled %}disabled{% endif %}>Solve with dReach</option>
         </select>
     </div>
 
 
     <div class="form-group">
         <label class=".control-label" for="semantics">CRN Semantics:</label>
-        <select class="form-control" id="semantics">
-            <option value="ODE">Deterministic (ODE)</option>
-            <option value="LNA">Stochastic (Linear Noise Approximation)</option>
+        <select class="form-control" id="semantics" name="semantics" {%if project.status %}disabled{% endif %}>
+            <option value="ODE" {% if project.crn_semantics == "ODE" %}selected{% endif %}>Deterministic (ODE)</option>
+            <option value="LNA" {% if project.crn_semantics == "LNA" %}selected{% endif %}>Stochastic (Linear Noise Approximation)</option>
         </select>
     </div>
 
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <button type="submit" class="btn btn-default">Submit</button>
 </form>
 
-    {% if project.status == "Running" or project.status == "Finished" %}
-        <h2>Results</h2>
-        <p><a href="iSAT">iSAT file</a></p>
+    {% if project.status %}
+
+        <h2>Generated files</h2>
+        <ul>
+            <li><a href="iSAT">iSAT file</a>.
+                Usage: <code>isat --i <i>file_name</i>.hys --prabs=0.1 --msw=0.5 --max-depth=2  --ode-opts --continue-after-not-reaching-horizon</code>
+            </li>
+            <li><a href="dReach">dReach file</a>.
+                Usage: <code>dreach --k 2 <i>file_name</i>.drh --precision 0.1</code>
+            </li>
+        </ul>
+<p>You may need to adjust the number of modes and precision in these usage examples.</p>
+
 
     {% endif %}
 

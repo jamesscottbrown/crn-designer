@@ -7,6 +7,10 @@ from crn_designer.project.solver_wrapper import getProblem
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for, send_from_directory, current_app
 from flask_login import login_required, current_user
+from werkzeug.utils import secure_filename
+
+from CRNSynthesis.solverCaller import SolverCallerISAT, SolverCallerDReal
+from numpy import savetxt
 
 import StringIO
 import csv
@@ -44,7 +48,8 @@ def project(project_id):
     if not current_project.spec:
         current_project.spec = 'false'  # lowercase as interpreted by JS
 
-    return render_template('projects/project.html', project=current_project)
+    return render_template('projects/project.html', project=current_project,
+                           solvers_enabled=current_app.config.get("SOLVERS_ENABLED"))
 
 
 @blueprint.route('/<int:project_id>/edit', methods=['GET', 'POST'])
@@ -78,6 +83,11 @@ def solve_project(project_id):
         flash('Not your project!', 'danger')
         return redirect('.')
 
+    # save form details
+    current_project.crn_semantics = request.form.get("semantics")
+    current_project.solver = request.form.get("solver")
+    current_project.save()
+
     # Construct CRN object
     print current_project.crn_sketch
 
@@ -86,24 +96,46 @@ def solve_project(project_id):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    # construct CRN object
-    #crn_object = construct_crn(current_project.crn_sketch)
+    # construct CRN object and input files for solvers
 
-    problem = getProblem(current_project.crn_sketch, current_project.spec)
+    isat_problem, dreal_problem, flow, crn = getProblem(current_project.crn_sketch, current_project.spec)
     with open(os.path.join(directory, 'iSAT.hys'), 'w') as fp:
-        fp.write(problem)
+        fp.write(isat_problem)
+    with open(os.path.join(directory, 'dReach.drh'), 'w') as fp:
+        fp.write(dreal_problem)
 
-    # TODO - construct file for solver
+    if request.form.get("solver") == "None":
+        current_project.status = "Config file generated"
+        current_project.save()
+        return redirect(url_for('project.project', project_id=project_id))
 
-    # TODO - call solver if necessary
-
-    # update status in DB
+    # Run solvers if requested
     current_project.status = "Running"
     current_project.save()
 
-    # TODO: start solver running problem
+    if request.form.get("solver") == "iSAT":
+        sc = SolverCallerISAT("./iSAT.hys", isat_path="../isat-ode-r2806-static-x86_64-generic-noSSE-stripped.txt")
+    elif request.form.get("solver") == "dReach":
+        sc = SolverCallerDReal("./dReach.drh", dreal_path="../isat-ode-r2806-static-x86_64-generic-noSSE-stripped.txt")
 
-    return render_template('projects/project.html', project=current_project)
+    result_files = sc.single_synthesis(cost=0)
+    for file_name in result_files:
+        vals, all_vals = sc.getCRNValues(file_name)
+
+        initial_conditions, parametrised_flow = sc.get_full_solution(crn, flow, all_vals)
+
+        with open(file_name+"-parameters.txt", "w") as f:
+            f.write("Initial Conditions: %s\n" % initial_conditions)
+            f.write("Flow: %\n" % parametrised_flow)
+
+        t, sol, variable_names = sc.simulate_solutions(initial_conditions, parametrised_flow,
+                                                       plot_name=file_name + "-simulation.png")
+        savetxt(file_name + "-simulation.csv", sol, delimiter=",")
+
+    current_project.status = "Complete"
+    current_project.save()
+
+    return redirect(url_for('project.project', project_id=project_id))
 
 
 @blueprint.route('/<int:project_id>/data', methods=['GET'])
@@ -158,6 +190,26 @@ def download_iSAT_file(project_id):
 
     attachment_filename = current_project.name + ".hys"
     return send_from_directory(directory, 'iSAT.hys', as_attachment=True, attachment_filename=attachment_filename)
+
+@blueprint.route('/<int:project_id>/dReach', methods=['GET'])
+def download_dReach_file(project_id):
+
+    current_project = Project.query.filter_by(id=project_id).first()
+
+    if current_project.user != current_user and not current_project.public:
+        flash('Not your project!', 'danger')
+        return redirect(url_for('project.project', project_id=project_id))
+
+    directory = os.path.join(current_app.config.get("UPLOAD_FOLDER"), str(project_id))
+    file_path = os.path.join(directory, 'dReach.drh')
+
+    if not os.path.isfile(file_path):
+        flash('iSAT file does not exist!', 'danger')
+        return redirect(url_for('project.project', project_id=project_id))
+
+    attachment_filename = current_project.name + ".drh"
+    return send_from_directory(directory, 'dReach.drh', as_attachment=True, attachment_filename=attachment_filename)
+
 
 # attachment_filename
 
