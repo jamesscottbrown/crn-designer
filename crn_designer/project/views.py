@@ -109,14 +109,19 @@ def solve_project(project_id):
         current_project.save()
         return redirect(url_for('project.project', project_id=project_id))
 
+    if not current_app.config.get("SOLVERS_ENABLED"):
+        flash('SAT-ODE Solvers not enabled!', 'danger')
+        return redirect(url_for('project.project', project_id=project_id))
+
+
     # Run solvers if requested
     current_project.status = "Running"
     current_project.save()
 
     if request.form.get("solver") == "iSAT":
-        sc = SolverCallerISAT("./iSAT.hys", isat_path="../isat-ode-r2806-static-x86_64-generic-noSSE-stripped.txt")
+        sc = SolverCallerISAT("./iSAT.hys", isat_path=current_app.config.get("ISAT_PATH"))
     elif request.form.get("solver") == "dReach":
-        sc = SolverCallerDReal("./dReach.drh", dreal_path="../isat-ode-r2806-static-x86_64-generic-noSSE-stripped.txt")
+        sc = SolverCallerDReal("./dReach.drh", dreal_path=current_app.config.get("DREAL_PATH"))
 
     result_files = sc.single_synthesis(cost=0)
     for file_name in result_files:

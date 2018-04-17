@@ -12,6 +12,8 @@ class Config(object):
     ALLOWED_EXTENSIONS = set(['csv'])
 
     SOLVERS_ENABLED = os.environ.get('SOLVERS_ENABLED', 0)
+    ISAT_PATH = os.environ.get('ISAT_PATH', "./isat")
+    DREAL_PATH = os.environ.get('DREAL_PATH', "./dreal")
 
     APP_DIR = os.path.abspath(os.path.dirname(__file__))  # This directory
     PROJECT_ROOT = os.path.abspath(os.path.join(APP_DIR, os.pardir))
