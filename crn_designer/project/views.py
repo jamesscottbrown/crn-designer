@@ -95,6 +95,7 @@ def solve_project(project_id):
     directory = os.path.join(current_app.config.get("UPLOAD_FOLDER"), str(project_id))
     if not os.path.exists(directory):
         os.makedirs(directory)
+    open(os.path.join(directory, 'results.txt'), 'a').close()
 
     # construct CRN object and input files for solvers
 
@@ -139,6 +140,53 @@ def solve_project(project_id):
 
     current_project.status = "Complete"
     current_project.save()
+
+    return redirect(url_for('project.project', project_id=project_id))
+
+
+@blueprint.route('/<int:project_id>/process', methods=['GET', 'POST'])
+@login_required
+def process_solver_output(project_id):
+    """Solve problem."""
+    current_project = Project.query.filter_by(id=project_id).first()
+
+    if current_project.user != current_user:
+        flash('Not your project!', 'danger')
+        return redirect('.')
+
+    # TODO: check status
+    if not current_project.status:
+        flash('Input files fo iSAT/dReach not yet generated!', 'danger')
+        return redirect(url_for('project.project', project_id=project_id))
+
+
+    # construct CRN object and input files for solvers
+    directory = os.path.join(current_app.config.get("UPLOAD_FOLDER"), str(project_id))
+
+    isat_problem, dreal_problem, flow, crn = getProblem(current_project.crn_sketch, current_project.spec)
+
+    solver = request.form.get("solver")
+    if solver == "iSAT":
+        sc = SolverCallerISAT("./iSAT.hys", isat_path=current_app.config.get("ISAT_PATH"))
+    elif solver == "dReach":
+        sc = SolverCallerDReal("./dReach.drh", dreal_path=current_app.config.get("DREAL_PATH"))
+
+    # pass as string isntead of file
+    file_name = os.path.join(directory, "results")
+    with open(file_name) as f:
+        f.write(request.form.get("result"))
+
+    vals, all_vals = sc.getCRNValues(file_name)
+
+    initial_conditions, parametrised_flow = sc.get_full_solution(crn, flow, all_vals)
+
+    with open(file_name+"-parameters.txt", "w") as f:
+        f.write("Initial Conditions: %s\n" % initial_conditions)
+        f.write("Flow: %\n" % parametrised_flow)
+
+    t, sol, variable_names = sc.simulate_solutions(initial_conditions, parametrised_flow,
+                                                   plot_name=file_name + "-simulation.png")
+    savetxt(file_name + "-simulation.csv", sol, delimiter=",")
 
     return redirect(url_for('project.project', project_id=project_id))
 
