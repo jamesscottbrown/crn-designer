@@ -136,7 +136,7 @@ def solve_project(project_id):
 
         t, sol, variable_names = sc.simulate_solutions(initial_conditions, parametrised_flow,
                                                        plot_name=file_name + "-simulation.png")
-        savetxt(file_name + "-simulation.csv", sol, delimiter=",")
+        savetxt(file_name + "-simulation.csv", sol, delimiter=",", header=",".join(variable_names))
 
     current_project.status = "Complete"
     current_project.save()
@@ -186,7 +186,7 @@ def process_solver_output(project_id):
 
     t, sol, variable_names = sc.simulate_solutions(initial_conditions, parametrised_flow,
                                                    plot_name=file_name + "-simulation.png")
-    savetxt(file_name + "-simulation.csv", sol, delimiter=",")
+    savetxt(file_name + "-simulation.csv", sol, delimiter=",", header=",".join(variable_names))
 
     return redirect(url_for('project.project', project_id=project_id))
 
