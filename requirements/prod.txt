@@ -40,5 +40,6 @@ Flask-DebugToolbar==0.10.1
 
 # Other
 numpy
+sympy
 
 git+https://github.com/max1s/CRNSynthesis@master
