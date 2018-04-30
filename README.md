@@ -16,9 +16,16 @@ If you have Docker installed, you can run in development mode by simply running:
 
     docker-compose -f docker-compose.yml up
 
-and then opening [``http://127.0.0.1:5000``](http://127.0.0.1:5000)
+and then opening [``http://127.0.0.1:5000``](http://127.0.0.1:5000). This will write to the database file ``dev.db``.
+
+Alternatively, you can run in production mode by running:
+
+    docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
+and then opening [``http://127.0.0.1:5000``](http://127.0.0.1:5000). This will write to the database file ``prod.db``. It also uses [Gunicorn](gunicorn.org) as a WSGI HTTP server (rather than Flask's built-in development server), and disables flask development deatures such as the debugging sidebar. 
+
     
-The first time this command is run, it will take a while to build a container image; on subsequent occasions the already-built image is used, and it starts running much faster.
+The first time that the ``docker-compose`` command is run, it will take a while to build a container image; on subsequent occasions the already-built image is used, and it starts running much faster.
 
 ### Without Docker
 

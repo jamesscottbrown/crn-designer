@@ -5,6 +5,6 @@ crn_designer:
   environment:
     FLASK_DEBUG: 0
     WEDDING_SECRET: 'REPLACE_ME'
-  working_dir: /code/crn-designer
-  command: gunicorn -w 4 -b 0.0.0.0:5000 --limit-request-line 16000 --pythonpath '/code,/code/crn-designer' 'app:create_app()'
+  working_dir: /code
+  command: gunicorn -w 4 -b 0.0.0.0:5000 --limit-request-line 16000 --pythonpath '/code,/code/crn_designer' 'app:create_app()'
 
