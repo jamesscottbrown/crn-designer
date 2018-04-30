@@ -4,3 +4,5 @@ crn_designer:
     - .:/code
   ports:
     - "5000:5000"
+  working_dir: /code
+  command: sh start.sh
