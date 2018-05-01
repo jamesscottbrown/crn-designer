@@ -48,8 +48,11 @@ def project(project_id):
     if not current_project.spec:
         current_project.spec = 'false'  # lowercase as interpreted by JS
 
+    solvers_enabled = current_app.config.get("SOLVERS_ENABLED")
+    solvers_enabled_bool = solvers_enabled and "0" not in solvers_enabled and "false" not in solvers_enabled.lower()
+
     return render_template('projects/project.html', project=current_project,
-                           solvers_enabled=current_app.config.get("SOLVERS_ENABLED"))
+                           solvers_enabled=solvers_enabled_bool)
 
 
 @blueprint.route('/<int:project_id>/edit', methods=['GET', 'POST'])
