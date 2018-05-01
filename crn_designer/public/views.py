@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Public section, including homepage and signup."""
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for, current_app
 from flask_login import login_required, login_user, logout_user
 
 from crn_designer.extensions import login_manager
@@ -46,6 +46,12 @@ def logout():
 @blueprint.route('/register/', methods=['GET', 'POST'])
 def register():
     """Register new user."""
+
+    allow_registration = current_app.config.get("ALLOW_REGISTRATION")
+    if not allow_registration or "0" in allow_registration or "false" in allow_registration.lower():
+        flash('Registration of new users is disabled.', 'danger')
+        return redirect(url_for('public.home'))
+
     form = RegisterForm(request.form)
     if form.validate_on_submit():
         User.create(username=form.username.data, email=form.email.data, password=form.password.data, active=True)
