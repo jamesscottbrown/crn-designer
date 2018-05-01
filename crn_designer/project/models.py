@@ -11,6 +11,7 @@ class Project(SurrogatePK, Model):
     name = Column(db.String(80), unique=False, nullable=False)
     description = Column(db.Text, unique=False, nullable=True)
     crn_sketch = Column(db.Text, unique=False, nullable=True)
+    crn_code = Column(db.Text, unique=False, nullable=True)
     spec = Column(db.Text, unique=False, nullable=True)
     status = Column(db.Text, unique=False, nullable=True)
     public = Column(db.Boolean)

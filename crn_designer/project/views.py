@@ -51,8 +51,12 @@ def project(project_id):
     solvers_enabled = current_app.config.get("SOLVERS_ENABLED")
     solvers_enabled_bool = solvers_enabled and "0" not in solvers_enabled and "false" not in solvers_enabled.lower()
 
+    allow_code_input = current_app.config.get("ALLOW_CODE_INPUT")
+    allow_code_input_bool = allow_code_input and "0" not in allow_code_input and "false" not in allow_code_input.lower()
+
     return render_template('projects/project.html', project=current_project,
-                           solvers_enabled=solvers_enabled_bool)
+                           solvers_enabled=solvers_enabled_bool,
+                           allow_code_input=allow_code_input_bool)
 
 
 @blueprint.route('/<int:project_id>/edit', methods=['GET', 'POST'])
@@ -102,7 +106,7 @@ def solve_project(project_id):
 
     # construct CRN object and input files for solvers
 
-    isat_problem, dreal_problem, flow, crn = getProblem(current_project.crn_sketch, current_project.spec)
+    isat_problem, dreal_problem, flow, crn = getProblem(current_project.crn_sketch, current_project.crn_code, current_project.spec)
     with open(os.path.join(directory, 'iSAT.hys'), 'w') as fp:
         fp.write(isat_problem)
     with open(os.path.join(directory, 'dReach.drh'), 'w') as fp:
@@ -330,18 +334,29 @@ def save_crn(project_id):
     if current_project.status:
         return "Cannot save, since project status is " + current_project.status
 
-    print "\n\n\nRequest:"
-    print request.form
-
     current_project.crn_sketch = unquote_plus(request.get_data()).decode('utf-8')
-
-    # save state
-    #current_project.solver = request.form["solver"]
-    #current_project.semantics = request.form["semantics"]
-    #current_project.actually_solve = request.form["actually-solve"]
     current_project.save()
 
     return "SUCCESS"
+
+@blueprint.route('/<int:project_id>/saveCode', methods=['POST'])
+@login_required
+def save_crn_code(project_id):
+    """Update code for a project."""
+    current_project = Project.query.filter_by(id=project_id).first()
+
+    if current_project.user != current_user:
+        flash('Not your project!', 'danger')
+        return redirect('.')
+
+    if current_project.status:
+        return "Cannot save, since project status is " + current_project.status
+
+    current_project.crn_code = unquote_plus(request.get_data()).decode('utf-8')
+    current_project.save()
+
+    return "SUCCESS"
+
 
 # TODO: merge save functions
 @blueprint.route('/<int:project_id>/save', methods=['POST'])

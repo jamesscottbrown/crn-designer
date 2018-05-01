@@ -11,9 +11,13 @@ class Config(object):
     UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', '/code/crn_designer/static/projects')
     ALLOWED_EXTENSIONS = set(['csv'])
 
-    SOLVERS_ENABLED = os.environ.get('SOLVERS_ENABLED', 0)
+    SOLVERS_ENABLED = os.environ.get('SOLVERS_ENABLED', "0")
     ISAT_PATH = os.environ.get('ISAT_PATH', "./isat")
     DREAL_PATH = os.environ.get('DREAL_PATH', "./dreal")
+
+    ALLOW_REGISTRATION = os.environ.get('ALLOW_REGISTRATION', "1")
+
+    ALLOW_CODE_INPUT = os.environ.get('ALLOW_CODE_INPUT', "1")
 
     APP_DIR = os.path.abspath(os.path.dirname(__file__))  # This directory
     PROJECT_ROOT = os.path.abspath(os.path.join(APP_DIR, os.pardir))

@@ -3,18 +3,30 @@ from sympy import Symbol, exp
 from CRNSynthesis.symbolicLNA import *
 from CRNSynthesis import iSATParser
 
-def getProblem(crn_sketch_string, specification_string):
+def getProblem(crn_sketch_string, crn_code, specification_string):
 
-    input_species = get_input_species(specification_string)
+    if specification_string:
+        input_species = get_input_species(specification_string)
+        isLNA, requiredDerivatives, specification = construct_specification(specification_string)
+    else:
+        input_species = []
+        isLNA = False
+        requiredDerivatives = []
+        specification = []
 
-    crn_details = CRNbuilder(crn_sketch_string, input_species)
-    crn = CRNSketch(crn_details.required_reactions, crn_details.optional_reactions, input_species)
+    crn = {}
+    constraints = []
+    if crn_code:
+        exec(crn_code)
+    else:
+        crn_details = CRNbuilder(crn_sketch_string, input_species)
+        crn = CRNSketch(crn_details.required_reactions, crn_details.optional_reactions, input_species)
+        constraints = crn_details.constraints
 
-    isLNA, requiredDerivatives, specification = construct_specification(specification_string)
 
     flow = crn.flow(isLNA, requiredDerivatives)
-    isat_problem, modes = iSATParser.constructISAT(crn, specification, flow, crn_details.constraints), specification
-    dreal_problem, modes = iSATParser.constructdReal(crn, specification, flow, crn_details.constraints), specification
+    isat_problem, modes = iSATParser.constructISAT(crn, specification, flow, constraints), specification
+    dreal_problem, modes = iSATParser.constructdReal(crn, specification, flow, constraints), specification
 
     return isat_problem, dreal_problem, flow, crn
 
