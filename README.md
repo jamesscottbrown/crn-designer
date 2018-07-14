@@ -10,6 +10,8 @@ The JavaScript components implementing the [CRN sketch editor](https://github.co
 
 ## Quickstart
 
+You will need to also clone submodules, by either providing the ``--recurse-submodules`` argument when first using ``git clone`` to clone this repository, or by using the ``git submodule update --init --recursive`` command subsequently.
+
 ### With Docker
 
 If you have Docker installed, you can run in development mode by simply running:
