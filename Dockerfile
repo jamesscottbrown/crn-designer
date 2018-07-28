@@ -3,13 +3,13 @@ FROM ubuntu:16.04
 MAINTAINER James Scott-Brown <james@jamesscottbrown.com>
 
 RUN apt-get update
-RUN apt-get install wget -y
+RUN apt-get install wget curl -y
 
 
 WORKDIR /root
 
 # dReal
-RUN wget https://github.com/dreal/dreal3/releases/download/v3.16.09.01/dReal-3.16.09.01-linux.tar.gz
+RUN curl -L -o dReal-3.16.09.01-linux.tar.gz https://github.com/dreal/dreal3/archive/v3.16.09.01.tar.gz
 RUN tar -zxvf dReal-3.16.09.01-linux.tar.gz
 
 # MathSAT
