@@ -34,7 +34,6 @@ js_spec = Bundle(
     'TimeRails/TimeRails/js/interval.js',
     'TimeRails/TimeRails/js/input.js',
     'TimeRails/TimeRails/js/time_rail.js',
-    'TimeRails/TimeRails/js/description.js',
     'crn-sketch-editor/libs/cola.v3.min.js',
     'crn-sketch-editor/crn-editor.js',
     filters='jsmin',
