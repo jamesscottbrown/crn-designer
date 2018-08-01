@@ -180,7 +180,7 @@ def get_input_species(specification_string):
             flow = Derivative(func, t).doit()
 
             base_name = subplot["base_variable_name"]
-            input_odes[base_name] = InputSpecies(base_name, start_value, flow)
+            input_odes[base_name] = InputSpecies(base_name, flow, initial_value=start_value)
 
     return input_odes
 
